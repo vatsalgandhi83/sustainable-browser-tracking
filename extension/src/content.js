@@ -1,5 +1,4 @@
 // This script runs on every page
-
 // Listen for messages from the popup or background script
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "toggleGrayscale") {

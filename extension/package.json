@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "esbuild src/background.js --bundle --outfile=dist/background.js --platform=browser",
     "build:css": "tailwindcss -i ./src/styles.css -o ./dist/styles.css",
-    "watch:css": "tailwindcss -i ./src/styles.css -o ./dist/styles.css --watch"
+    "watch:css": "tailwindcss -i ./src/styles.css -o ./dist/styles.css --watch",
+    "dev": "npm run build:css && npm run build && npm run watch:css"
   },
   "repository": {
     "type": "git",
@@ -25,8 +26,8 @@
     "esbuild": "^0.25.9"
   },
   "devDependencies": {
-    "autoprefixer": "^10.4.14",
-    "postcss": "^8.4.27",
-    "tailwindcss": "^3.3.3"
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.17"
   }
 }
