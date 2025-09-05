@@ -32,11 +32,12 @@ async function checkCurrentTabStatus() {
       const response = await fetch(
         `https://api.thegreenwebfoundation.org/api/v3/greencheck/${domain}`
       );
+
       if (!response.ok) {
         throw new Error("API request failed");
       }
       const data = await response.json();
-
+      console.log("Data:", data);
       // 4. Update the UI with the result
       updateTabStatusUI(data.green, tabInfoDiv);
     } catch (error) {
