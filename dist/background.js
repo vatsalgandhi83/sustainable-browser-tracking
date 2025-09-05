@@ -1095,47 +1095,70 @@
       analyzeUrl(tab.url);
     }
   });
+  async function fetchWithRetry(url, retries = 3, delay = 500) {
+    for (let i = 0; i < retries; i++) {
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data2 = await response.json();
+        return data2;
+      } catch (error) {
+        console.warn(
+          `Attempt ${i + 1} failed for ${url}. Retrying in ${delay}ms...`
+        );
+        if (i < retries - 1) {
+          await new Promise((res) => setTimeout(res, delay));
+        } else {
+          throw error;
+        }
+      }
+    }
+  }
   async function analyzeUrl(urlString) {
+    let isGreen = false;
     try {
       const url = new URL(urlString);
       const domain = url.hostname;
-      console.log(`Analyzing domain: ${domain}`);
-      const response = await fetch(
+      const data2 = await fetchWithRetry(
         `https://api.thegreenwebfoundation.org/api/v3/greencheck/${domain}`
       );
-      const data2 = await response.json();
-      const isGreen = data2.green;
-      const bytes = 2e6;
-      const estimatedCO2 = co2.perByte(bytes, isGreen);
-      chrome.storage.sync.get(["dailyStats"], (result) => {
-        const today = (/* @__PURE__ */ new Date()).toISOString().split("T")[0];
-        let stats = result.dailyStats || {};
-        if (!stats.date || stats.date !== today) {
-          stats = {
-            date: today,
-            co2: 0,
-            greenVisits: 0,
-            totalVisits: 0,
-            points: 0,
-            badges: []
-          };
-        }
-        const currentPoints = stats.points || 0;
-        const currentBadges = stats.badges || [];
-        const newPoints = calculateNewScore(currentPoints, isGreen);
-        const newBadges = checkBadgeUnlocks(newPoints, currentBadges);
-        stats.co2 = (stats.co2 || 0) + estimatedCO2;
-        stats.totalVisits += 1;
-        stats.points = newPoints;
-        stats.badges = newBadges;
-        if (isGreen) {
-          stats.greenVisits += 1;
-        }
-        chrome.storage.sync.set({ dailyStats: stats });
-        console.log("Saved updated stats with correct CO2:", stats);
-      });
+      isGreen = data2.green;
     } catch (error) {
-      console.error("Could not analyze URL:", error);
+      console.error(
+        `Could not analyze URL after multiple retries: ${urlString}`,
+        error
+      );
     }
+    const bytes = 2e6;
+    const estimatedCO2 = co2.perByte(bytes, isGreen);
+    chrome.storage.sync.get(["dailyStats"], (result) => {
+      const today = (/* @__PURE__ */ new Date()).toISOString().split("T")[0];
+      let stats = result.dailyStats || {};
+      if (!stats.date || stats.date !== today) {
+        stats = {
+          date: today,
+          co2: 0,
+          greenVisits: 0,
+          totalVisits: 0,
+          points: 0,
+          badges: []
+        };
+      }
+      const currentPoints = stats.points || 0;
+      const currentBadges = stats.badges || [];
+      const newPoints = calculateNewScore(currentPoints, isGreen);
+      const newBadges = checkBadgeUnlocks(newPoints, currentBadges);
+      stats.co2 = (stats.co2 || 0) + estimatedCO2;
+      stats.totalVisits += 1;
+      stats.points = newPoints;
+      stats.badges = newBadges;
+      if (isGreen) {
+        stats.greenVisits += 1;
+      }
+      chrome.storage.sync.set({ dailyStats: stats });
+      console.log("Saved updated stats with correct CO2:", stats);
+    });
   }
 })();
