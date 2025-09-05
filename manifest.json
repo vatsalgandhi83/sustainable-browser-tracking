@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Sustainable Browsing Tracker",
   "version": "1.0",
-  "permissions": ["tabs", "storage", "webNavigation", "scripting"],
+  "permissions": ["tabs", "storage", "webNavigation", "scripting", "notifications"],
   "host_permissions": [
     "https://api.thegreenwebfoundation.org/*"
   ],
