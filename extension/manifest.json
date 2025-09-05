@@ -23,9 +23,12 @@
       "js": ["src/content.js"]
     }
   ],
+  "icons": {
+    "128": "images/icon128.png"
+  },
   "web_accessible_resources": [
     {
-      "resources": ["icons/lucide/*.svg"],
+      "resources": ["images/icon128.png", "icons/lucide/*.svg"],
       "matches": ["<all_urls>"]
     }
   ]
