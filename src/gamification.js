@@ -3,9 +3,6 @@ const SCORING_RULES = {
   VISIT_NON_GREEN_SITE: -5,
 };
 
-/**
- * Defines the badges and the points required to unlock them.
- */
 
 const BADGES = {
   ECO_STARTER: {
@@ -25,13 +22,6 @@ const BADGES = {
   }
 };
 
-/**
- * Calculates the new score based on a browsing action.
- * @param {number} currentScore - The user's current score.
- * @param {boolean} isGreen - Whether the visited site is green-hosted.
- * @returns {number} The updated score.
- */
-
 export function calculateNewScore(currentScore, isGreen) {
   if (isGreen) {
     return currentScore + SCORING_RULES.VISIT_GREEN_SITE;
@@ -39,13 +29,6 @@ export function calculateNewScore(currentScore, isGreen) {
     return currentScore + SCORING_RULES.VISIT_NON_GREEN_SITE;
   }
 }
-
-/**
- * Checks which badges the user has earned based on their score.
- * @param {number} score - The user's current score.
- * @param {Array<string>} currentBadges - An array of badge names the user already has.
- * @returns {Array<string>} An updated array of earned badge names.
- */
 
 export function checkBadgeUnlocks(score, currentBadges) {
   const newlyUnlocked = [];
@@ -55,6 +38,5 @@ export function checkBadgeUnlocks(score, currentBadges) {
       newlyUnlocked.push(badge.name);
     }
   }
-  // Return a combined list of old and new badges
   return [...currentBadges, ...newlyUnlocked];
 }

@@ -3,6 +3,9 @@
   "name": "Sustainable Browsing Tracker",
   "version": "1.0",
   "permissions": ["tabs", "storage", "webNavigation", "scripting"],
+  "host_permissions": [
+    "https://api.thegreenwebfoundation.org/*"
+  ],
   "background": {
     "service_worker": "dist/background.js",
     "type": "module"
