@@ -22,5 +22,11 @@
       "matches": ["<all_urls>"],
       "js": ["src/content.js"]
     }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["icons/lucide/*.svg"],
+      "matches": ["<all_urls>"]
+    }
   ]
 }
