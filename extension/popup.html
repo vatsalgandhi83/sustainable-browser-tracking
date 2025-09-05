@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sustainable Browsing Tracker</title>
+    <link href="dist/styles.css" rel="stylesheet" />
+  </head>
+  <body class="bg-gray-50 text-gray-800 p-4">
+    <div class="space-y-4">
+      <div class="flex items-center space-x-3">
+        <img src="icons/icon48.png" alt="icon" class="w-10 h-10" />
+        <div>
+          <h1 class="text-lg font-bold text-green-700">Sustainable Browsing</h1>
+          <p class="text-xs text-gray-500">Your Eco-Dashboard</p>
+        </div>
+      </div>
+
+      <!-- Stats Section -->
+      <div class="bg-white p-3 rounded-lg shadow-sm">
+        <h2 class="text-sm font-semibold mb-2 text-gray-600">Impact So Far</h2>
+        <div class="grid grid-cols-2 gap-3 text-center">
+          <div>
+            <p class="text-2xl font-bold text-green-600" id="co2-emissions">
+              0.0
+            </p>
+            <p class="text-xs text-gray-500">CO2 Emitted (g)</p>
+          </div>
+          <div>
+            <p class="text-2xl font-bold text-blue-600" id="green-sites">
+              0 / 0
+            </p>
+            <p class="text-xs text-gray-500">Green Sites Visited</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Current Tab Status Section -->
+      <div class="bg-white p-3 rounded-lg shadow-sm">
+        <h2 class="text-sm font-semibold mb-2 text-gray-600">
+          Current Tab Status
+        </h2>
+        <div id="current-tab-info" class="text-center p-2 rounded-md">
+          <p class="font-bold">Checking...</p>
+        </div>
+      </div>
+
+      <!-- Gamification Section -->
+      <div class="bg-white p-3 rounded-lg shadow-sm">
+        <h2 class="text-sm font-semibold mb-2 text-gray-600">Your Progress</h2>
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-2xl font-bold text-yellow-500" id="points">0</p>
+            <p class="text-xs text-gray-500">Eco Points</p>
+          </div>
+          <div class="text-right">
+            <p class="text-lg font-bold text-yellow-600" id="badge">Newbie</p>
+            <p class="text-xs text-gray-500">Current Badge</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions Section -->
+      <div class="pt-2">
+        <button
+          id="toggle-grayscale"
+          class="w-full bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors shadow-sm"
+        >
+          Toggle Low Power Mode
+        </button>
+        <p class="text-xs text-center text-gray-400 mt-2">
+          Activate grayscale to save energy on the current tab.
+        </p>
+      </div>
+    </div>
+    <script src="src/popup.js"></script>
+  </body>
+</html>
