@@ -6,6 +6,44 @@
     <title>Sustainable Browsing Tracker</title>
     <link href="dist/styles.css" rel="stylesheet" />
     <script src="src/lucide-icons.js"></script>
+    <style>
+      /* Custom animation for badge transitions */
+      @keyframes badge-glow {
+        0% {
+          box-shadow: 0 0 5px rgba(251, 191, 36, 0.5);
+        }
+        50% {
+          box-shadow: 0 0 20px rgba(251, 191, 36, 0.8),
+            0 0 30px rgba(251, 191, 36, 0.5);
+        }
+        100% {
+          box-shadow: 0 0 5px rgba(251, 191, 36, 0.5);
+        }
+      }
+
+      .badge-celebrating {
+        animation: badge-glow 1s ease-in-out;
+      }
+
+      @keyframes confetti {
+        0% {
+          transform: translateY(0) rotate(0deg);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(-50px) rotate(720deg);
+          opacity: 0;
+        }
+      }
+
+      .confetti-particle {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        background: linear-gradient(45deg, #fbbf24, #f59e0b);
+        animation: confetti 1s ease-out forwards;
+      }
+    </style>
   </head>
   <body
     class="bg-gray-50 text-gray-800 p-4"
@@ -73,7 +111,7 @@
       </div>
 
       <!-- Gamification Section -->
-      <div class="bg-white p-3 rounded-lg shadow-sm">
+      <div class="bg-white p-3 rounded-lg shadow-sm overflow-hidden">
         <h2 class="text-sm font-semibold mb-2 text-gray-600 flex items-center">
           <i data-lucide="trophy" class="w-4 h-4 mr-1"></i>
           Your Progress
