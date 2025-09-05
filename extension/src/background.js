@@ -82,6 +82,7 @@ chrome.notifications.onClicked.addListener((notificationId) => {
   }
 });
 
+
 function showInitialPrompt(domain) {
   const notificationId = `ai-prompt-${domain}`;
   chrome.notifications.create(notificationId, {
@@ -119,6 +120,7 @@ function showCachedSuggestion(domain, cachedUrl) {
   notificationData[notificationId] = { cachedUrl };
 }
 
+
 async function getAISuggestion(domain) {
   try {
     const response = await fetch("http://127.0.0.1:5000/find-alternative", {
@@ -142,7 +144,6 @@ async function cacheSuggestion(originalDomain, suggestedDomain) {
     const cache = result.suggestionCache || {};
     cache[originalDomain] = suggestedDomain;
     chrome.storage.sync.set({ suggestionCache: cache });
-    console.log(`Cached suggestion: ${originalDomain} -> ${suggestedDomain}`);
   });
 }
 
