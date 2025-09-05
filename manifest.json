@@ -4,7 +4,8 @@
   "version": "1.0",
   "permissions": ["tabs", "storage", "webNavigation", "scripting"],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "dist/background.js",
+    "type": "module"
   },
   "action": {
     "default_popup": "popup.html"
