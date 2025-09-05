@@ -5,6 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sustainable Browsing Tracker</title>
     <link href="dist/styles.css" rel="stylesheet" />
+    <script src="src/lucide-icons.js"></script>
+    <style>
+      @keyframes badge-glow {
+        0% {
+          box-shadow: 0 0 5px rgba(251, 191, 36, 0.5);
+        }
+        50% {
+          box-shadow: 0 0 20px rgba(251, 191, 36, 0.8),
+            0 0 30px rgba(251, 191, 36, 0.5);
+        }
+        100% {
+          box-shadow: 0 0 5px rgba(251, 191, 36, 0.5);
+        }
+      }
+
+      .badge-celebrating {
+        animation: badge-glow 1s ease-in-out;
+      }
+
+      @keyframes confetti {
+        0% {
+          transform: translateY(0) rotate(0deg);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(-50px) rotate(720deg);
+          opacity: 0;
+        }
+      }
+
+      .confetti-particle {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        background: linear-gradient(45deg, #fbbf24, #f59e0b);
+        animation: confetti 1s ease-out forwards;
+      }
+    </style>
   </head>
   <body
     class="bg-gray-50 text-gray-800 p-4"
@@ -12,24 +50,36 @@
   >
     <div class="space-y-4">
       <div class="flex items-center space-x-3">
-        <img src="icons/icon48.png" alt="icon" class="w-10 h-10" />
+        <div
+          class="flex items-center justify-center bg-green-100 rounded-full p-2 w-12 h-12"
+        >
+          <i data-lucide="leaf" class="text-green-600 w-8 h-8"></i>
+        </div>
         <div>
           <h1 class="text-lg font-bold text-green-700">Sustainable Browsing</h1>
           <p class="text-xs text-gray-500">Your Eco-Dashboard</p>
         </div>
       </div>
 
-      <!-- Stats Section -->
       <div class="bg-white p-3 rounded-lg shadow-sm">
-        <h2 class="text-sm font-semibold mb-2 text-gray-600">Impact So Far</h2>
+        <h2 class="text-sm font-semibold mb-2 text-gray-600 flex items-center">
+          <i data-lucide="activity" class="w-4 h-4 mr-1"></i>
+          Impact So Far
+        </h2>
         <div class="grid grid-cols-2 gap-3 text-center">
-          <div>
+          <div class="flex flex-col items-center">
+            <div class="flex items-center justify-center h-8">
+              <i data-lucide="cloud" class="w-5 h-5 text-green-500"></i>
+            </div>
             <p class="text-2xl font-bold text-green-600" id="co2-emissions">
               0.0
             </p>
             <p class="text-xs text-gray-500">CO2 Emitted (g)</p>
           </div>
-          <div>
+          <div class="flex flex-col items-center">
+            <div class="flex items-center justify-center h-8">
+              <i data-lucide="check-circle" class="w-5 h-5 text-blue-500"></i>
+            </div>
             <p class="text-2xl font-bold text-blue-600" id="green-sites">
               0 / 0
             </p>
@@ -38,44 +88,112 @@
         </div>
       </div>
 
-      <!-- Current Tab Status Section -->
       <div class="bg-white p-3 rounded-lg shadow-sm">
-        <h2 class="text-sm font-semibold mb-2 text-gray-600">
+        <h2 class="text-sm font-semibold mb-2 text-gray-600 flex items-center">
+          <i data-lucide="globe" class="w-4 h-4 mr-1"></i>
           Current Tab Status
         </h2>
-        <div id="current-tab-info" class="text-center p-2 rounded-md">
-          <p class="font-bold">Checking...</p>
-        </div>
+        <div
+          id="current-tab-info"
+          class="text-center p-2 rounded-md flex flex-col items-center"
+        ></div>
       </div>
 
-      <!-- Gamification Section -->
-      <div class="bg-white p-3 rounded-lg shadow-sm">
-        <h2 class="text-sm font-semibold mb-2 text-gray-600">Your Progress</h2>
+      <div class="bg-white p-3 rounded-lg shadow-sm overflow-hidden">
+        <h2 class="text-sm font-semibold mb-2 text-gray-600 flex items-center">
+          <i data-lucide="trophy" class="w-4 h-4 mr-1"></i>
+          Your Progress
+        </h2>
         <div class="flex items-center justify-between">
-          <div>
+          <div class="flex flex-col items-center">
+            <div class="flex items-center justify-center h-8">
+              <i data-lucide="star" class="w-5 h-5 text-yellow-400"></i>
+            </div>
             <p class="text-2xl font-bold text-yellow-500" id="points">0</p>
             <p class="text-xs text-gray-500">Eco Points</p>
           </div>
-          <div class="text-right">
+          <div class="flex flex-col items-center">
+            <div class="flex items-center justify-center h-8">
+              <i data-lucide="award" class="w-5 h-5 text-yellow-600"></i>
+            </div>
             <p class="text-lg font-bold text-yellow-600" id="badge">Newbie</p>
             <p class="text-xs text-gray-500">Current Badge</p>
           </div>
         </div>
       </div>
 
-      <!-- Actions Section -->
       <div class="pt-2">
         <button
           id="toggle-grayscale"
-          class="w-full bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors shadow-sm"
+          class="w-full bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors shadow-sm flex items-center justify-center"
         >
+          <i data-lucide="power" class="w-5 h-5 mr-2"></i>
           Toggle Low Power Mode
         </button>
-        <p class="text-xs text-center text-gray-400 mt-2">
+        <p
+          class="text-xs text-center text-gray-400 mt-2 flex items-center justify-center"
+        >
+          <i data-lucide="info" class="w-3 h-3 mr-1"></i>
           Activate grayscale to save energy on the current tab.
         </p>
       </div>
     </div>
     <script src="src/popup.js"></script>
+    <script>
+      // Initialize all Lucide icons when the document is loaded
+      document.addEventListener("DOMContentLoaded", async () => {
+        await lucide.createIcons();
+
+        // Update current tab status UI function to incorporate icons
+        window.updateTabStatusUI = async function (isGreen, element) {
+          element.innerHTML = ""; // Clear the element
+
+          const iconDiv = document.createElement("div");
+          iconDiv.className = "mb-2";
+
+          const textP = document.createElement("p");
+          textP.className = "font-bold";
+
+          if (isGreen) {
+            element.className =
+              "text-center p-2 rounded-md bg-green-100 text-green-800 flex flex-col items-center";
+            iconDiv.innerHTML =
+              '<i data-lucide="check-circle" class="w-6 h-6 text-green-600"></i>';
+            textP.textContent = "This site is Green Hosted!";
+          } else {
+            element.className =
+              "text-center p-2 rounded-md bg-yellow-100 text-yellow-800 flex flex-col items-center";
+            iconDiv.innerHTML =
+              '<i data-lucide="alert-circle" class="w-6 h-6 text-yellow-600"></i>';
+            textP.textContent = "Not on renewable energy.";
+
+            const infoP = document.createElement("p");
+            infoP.className = "text-xs";
+            infoP.textContent = "Consider using Low Power Mode.";
+            element.appendChild(iconDiv);
+            element.appendChild(textP);
+            element.appendChild(infoP);
+            await lucide.createIcons({
+              attrs: {
+                class: "my-icon-class",
+              },
+              nameAttr: "data-lucide",
+            });
+            return;
+          }
+
+          element.appendChild(iconDiv);
+          element.appendChild(textP);
+
+          // Re-initialize icons in the updated DOM
+          await lucide.createIcons({
+            attrs: {
+              class: "my-icon-class",
+            },
+            nameAttr: "data-lucide",
+          });
+        };
+      });
+    </script>
   </body>
 </html>

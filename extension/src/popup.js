@@ -1,4 +1,5 @@
-// Function to update the UI with data from storage
+let previousBadge = null;
+
 function updateUI(data) {
   document.getElementById("co2-emissions").textContent = (
     data.co2 || 0
@@ -6,29 +7,142 @@ function updateUI(data) {
   document.getElementById("green-sites").textContent = `${
     data.greenVisits || 0
   } / ${data.totalVisits || 0}`;
-  document.getElementById("points").textContent = data.points || 0;
 
-  // Determine badge based on points
+  const pointsElement = document.getElementById("points");
+  const newPoints = data.points || 0;
+  const currentPoints = parseInt(pointsElement.textContent) || 0;
+
+  if (newPoints !== currentPoints) {
+    pointsElement.style.transform = "scale(1.2)";
+    pointsElement.style.transition = "transform 0.3s ease";
+    setTimeout(() => {
+      pointsElement.textContent = newPoints;
+      pointsElement.style.transform = "scale(1)";
+    }, 150);
+  } else {
+    pointsElement.textContent = newPoints;
+  }
+
   let badge = "Newbie";
   if (data.points >= 100) badge = "Eco Warrior";
   else if (data.points >= 50) badge = "Eco Starter";
-  document.getElementById("badge").textContent = badge;
+
+  const badgeElement = document.getElementById("badge");
+  const badgeContainer = badgeElement.parentElement;
+
+  if (previousBadge !== null && previousBadge !== badge) {
+    badgeElement.style.opacity = "0";
+    badgeElement.style.transform = "translateY(-10px)";
+    badgeElement.style.transition = "all 0.3s ease";
+
+    badgeContainer.classList.add("badge-celebrating");
+
+    createConfetti(badgeContainer);
+
+    playBadgeSound();
+
+    setTimeout(() => {
+      badgeElement.textContent = badge;
+      badgeElement.style.opacity = "1";
+      badgeElement.style.transform = "translateY(0)";
+
+      if (badge === "Eco Warrior") {
+        badgeElement.className = "text-lg font-bold text-green-600";
+      } else if (badge === "Eco Starter") {
+        badgeElement.className = "text-lg font-bold text-blue-600";
+      } else {
+        badgeElement.className = "text-lg font-bold text-yellow-600";
+      }
+
+      setTimeout(() => {
+        badgeContainer.classList.remove("badge-celebrating");
+      }, 1000);
+    }, 300);
+  } else {
+    badgeElement.textContent = badge;
+  }
+
+  previousBadge = badge;
 }
 
-// Function to check the status of the currently active tab
+function createConfetti(container) {
+  const colors = ["#fbbf24", "#f59e0b", "#10b981", "#3b82f6"];
+  const particles = 8;
+
+  for (let i = 0; i < particles; i++) {
+    setTimeout(() => {
+      const particle = document.createElement("div");
+      particle.className = "confetti-particle";
+      particle.style.left = Math.random() * 100 + "%";
+      particle.style.backgroundColor =
+        colors[Math.floor(Math.random() * colors.length)];
+      particle.style.width = Math.random() * 6 + 4 + "px";
+      particle.style.height = particle.style.width;
+      particle.style.borderRadius = "50%";
+
+      container.style.position = "relative";
+      container.appendChild(particle);
+
+      setTimeout(() => {
+        particle.remove();
+      }, 1000);
+    }, i * 50);
+  }
+}
+
+function playBadgeSound() {
+  try {
+    const audioContext = new (window.AudioContext ||
+      window.webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+
+    oscillator.type = "sine";
+    oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
+    oscillator.frequency.exponentialRampToValueAtTime(
+      659.25,
+      audioContext.currentTime + 0.1
+    ); // E5
+    oscillator.frequency.exponentialRampToValueAtTime(
+      783.99,
+      audioContext.currentTime + 0.2
+    ); // G5
+
+    gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+    gainNode.gain.linearRampToValueAtTime(0.1, audioContext.currentTime + 0.05);
+    gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.3);
+
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.3);
+  } catch (error) {
+    // Silently fail if audio is not supported or blocked
+    console.log("Could not play sound:", error);
+  }
+}
+
+function showTabStatusLoading(element) {
+  element.className = "text-center p-2 rounded-md flex flex-col items-center";
+  element.innerHTML =
+    '<div class="mb-1"><i data-lucide="loader-circle" class="w-6 h-6 text-gray-500 animate-spin"></i></div><p class="font-bold">Checking...</p>';
+  if (window.lucide && typeof window.lucide.createIcons === "function") {
+    window.lucide.createIcons();
+  }
+}
+
 async function checkCurrentTabStatus() {
   const tabInfoDiv = document.getElementById("current-tab-info");
 
-  // 1. Get the current active tab
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
-  // 2. Check if it's a valid web page
   if (tab && tab.url && tab.url.startsWith("http")) {
     try {
       const url = new URL(tab.url);
       const domain = url.hostname;
+      showTabStatusLoading(tabInfoDiv);
 
-      // 3. Fetch its green status from the API
       const response = await fetch(
         `https://api.thegreenwebfoundation.org/api/v3/greencheck/${domain}`
       );
@@ -38,7 +152,6 @@ async function checkCurrentTabStatus() {
       }
       const data = await response.json();
       console.log("Data:", data);
-      // 4. Update the UI with the result
       updateTabStatusUI(data.green, tabInfoDiv);
     } catch (error) {
       console.error("Error checking current tab:", error);
@@ -51,9 +164,8 @@ async function checkCurrentTabStatus() {
   }
 }
 
-// Helper function to update the "Current Tab Status" UI
 function updateTabStatusUI(isGreen, element) {
-  element.innerHTML = ""; // Clear the "Checking..." text
+  element.innerHTML = "";
   if (isGreen) {
     element.className =
       "text-center p-2 rounded-md bg-green-100 text-green-800";
@@ -65,24 +177,20 @@ function updateTabStatusUI(isGreen, element) {
   }
 }
 
-// Listen for when the popup is fully loaded
 document.addEventListener("DOMContentLoaded", () => {
-  // Get the latest data from storage and update the UI for overall stats
-  chrome.storage.sync.get(["dailyStats", "points"], (result) => {
+  chrome.storage.sync.get(["dailyStats"], (result) => {
     const data = {
       co2: result.dailyStats?.co2 || 0,
       greenVisits: result.dailyStats?.greenVisits || 0,
       totalVisits: result.dailyStats?.totalVisits || 0,
-      points: result.points || 0,
+      points: result.dailyStats?.points || 0,
     };
     console.log("Popup data:", data);
     updateUI(data);
   });
 
-  // Check the status of the current tab as soon as the popup opens
   checkCurrentTabStatus();
 
-  // Handle the grayscale toggle button click
   const grayscaleBtn = document.getElementById("toggle-grayscale");
   grayscaleBtn.addEventListener("click", () => {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -93,18 +201,15 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-// Listen for real-time updates from the background script for the overall stats
 chrome.storage.onChanged.addListener((changes, namespace) => {
-  if (namespace === "sync") {
-    chrome.storage.sync.get(["dailyStats", "points"], (result) => {
-      const data = {
-        co2: result.dailyStats?.co2 || 0,
-        greenVisits: result.dailyStats?.greenVisits || 0,
-        totalVisits: result.dailyStats?.totalVisits || 0,
-        points: result.points || 0,
-      };
-      console.log("Updated data:", data);
-      updateUI(data);
-    });
+  if (namespace === "sync" && changes.dailyStats) {
+    const data = {
+      co2: changes.dailyStats.newValue?.co2 || 0,
+      greenVisits: changes.dailyStats.newValue?.greenVisits || 0,
+      totalVisits: changes.dailyStats.newValue?.totalVisits || 0,
+      points: changes.dailyStats.newValue?.points || 0,
+    };
+    console.log("Updated data from storage change:", data);
+    updateUI(data);
   }
 });
