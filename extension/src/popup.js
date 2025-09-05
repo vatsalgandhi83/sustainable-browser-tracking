@@ -1,7 +1,5 @@
-// Store the previous badge to detect changes
 let previousBadge = null;
 
-// Function to update the UI with data from storage
 function updateUI(data) {
   document.getElementById("co2-emissions").textContent = (
     data.co2 || 0
@@ -10,7 +8,6 @@ function updateUI(data) {
     data.greenVisits || 0
   } / ${data.totalVisits || 0}`;
 
-  // Animate points change
   const pointsElement = document.getElementById("points");
   const newPoints = data.points || 0;
   const currentPoints = parseInt(pointsElement.textContent) || 0;
@@ -26,28 +23,22 @@ function updateUI(data) {
     pointsElement.textContent = newPoints;
   }
 
-  // Determine badge based on points
   let badge = "Newbie";
   if (data.points >= 100) badge = "Eco Warrior";
   else if (data.points >= 50) badge = "Eco Starter";
 
-  // Animate badge change
   const badgeElement = document.getElementById("badge");
   const badgeContainer = badgeElement.parentElement;
 
   if (previousBadge !== null && previousBadge !== badge) {
-    // Badge has changed - animate it
     badgeElement.style.opacity = "0";
     badgeElement.style.transform = "translateY(-10px)";
     badgeElement.style.transition = "all 0.3s ease";
 
-    // Add a glow effect to the container
     badgeContainer.classList.add("badge-celebrating");
 
-    // Create confetti effect
     createConfetti(badgeContainer);
 
-    // Play a subtle sound effect (optional)
     playBadgeSound();
 
     setTimeout(() => {
@@ -55,7 +46,6 @@ function updateUI(data) {
       badgeElement.style.opacity = "1";
       badgeElement.style.transform = "translateY(0)";
 
-      // Update badge color based on level
       if (badge === "Eco Warrior") {
         badgeElement.className = "text-lg font-bold text-green-600";
       } else if (badge === "Eco Starter") {
@@ -64,7 +54,6 @@ function updateUI(data) {
         badgeElement.className = "text-lg font-bold text-yellow-600";
       }
 
-      // Remove glow after animation
       setTimeout(() => {
         badgeContainer.classList.remove("badge-celebrating");
       }, 1000);
@@ -76,7 +65,6 @@ function updateUI(data) {
   previousBadge = badge;
 }
 
-// Function to create confetti particles
 function createConfetti(container) {
   const colors = ["#fbbf24", "#f59e0b", "#10b981", "#3b82f6"];
   const particles = 8;
@@ -95,7 +83,6 @@ function createConfetti(container) {
       container.style.position = "relative";
       container.appendChild(particle);
 
-      // Remove particle after animation
       setTimeout(() => {
         particle.remove();
       }, 1000);
@@ -103,7 +90,6 @@ function createConfetti(container) {
   }
 }
 
-// Function to play a subtle celebration sound
 function playBadgeSound() {
   try {
     const audioContext = new (window.AudioContext ||
@@ -114,7 +100,6 @@ function playBadgeSound() {
     oscillator.connect(gainNode);
     gainNode.connect(audioContext.destination);
 
-    // Create a pleasant ascending tone
     oscillator.type = "sine";
     oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
     oscillator.frequency.exponentialRampToValueAtTime(
@@ -126,7 +111,6 @@ function playBadgeSound() {
       audioContext.currentTime + 0.2
     ); // G5
 
-    // Fade in and out
     gainNode.gain.setValueAtTime(0, audioContext.currentTime);
     gainNode.gain.linearRampToValueAtTime(0.1, audioContext.currentTime + 0.05);
     gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.3);
@@ -139,20 +123,26 @@ function playBadgeSound() {
   }
 }
 
-// Function to check the status of the currently active tab
+function showTabStatusLoading(element) {
+  element.className = "text-center p-2 rounded-md flex flex-col items-center";
+  element.innerHTML =
+    '<div class="mb-1"><i data-lucide="loader-circle" class="w-6 h-6 text-gray-500 animate-spin"></i></div><p class="font-bold">Checking...</p>';
+  if (window.lucide && typeof window.lucide.createIcons === "function") {
+    window.lucide.createIcons();
+  }
+}
+
 async function checkCurrentTabStatus() {
   const tabInfoDiv = document.getElementById("current-tab-info");
 
-  // 1. Get the current active tab
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
-  // 2. Check if it's a valid web page
   if (tab && tab.url && tab.url.startsWith("http")) {
     try {
       const url = new URL(tab.url);
       const domain = url.hostname;
+      showTabStatusLoading(tabInfoDiv);
 
-      // 3. Fetch its green status from the API
       const response = await fetch(
         `https://api.thegreenwebfoundation.org/api/v3/greencheck/${domain}`
       );
@@ -162,7 +152,6 @@ async function checkCurrentTabStatus() {
       }
       const data = await response.json();
       console.log("Data:", data);
-      // 4. Update the UI with the result
       updateTabStatusUI(data.green, tabInfoDiv);
     } catch (error) {
       console.error("Error checking current tab:", error);
@@ -175,9 +164,8 @@ async function checkCurrentTabStatus() {
   }
 }
 
-// Helper function to update the "Current Tab Status" UI
 function updateTabStatusUI(isGreen, element) {
-  element.innerHTML = ""; // Clear the "Checking..." text
+  element.innerHTML = "";
   if (isGreen) {
     element.className =
       "text-center p-2 rounded-md bg-green-100 text-green-800";
@@ -189,9 +177,7 @@ function updateTabStatusUI(isGreen, element) {
   }
 }
 
-// Listen for when the popup is fully loaded
 document.addEventListener("DOMContentLoaded", () => {
-  // Get the latest data from storage and update the UI for overall stats
   chrome.storage.sync.get(["dailyStats"], (result) => {
     const data = {
       co2: result.dailyStats?.co2 || 0,
@@ -203,10 +189,8 @@ document.addEventListener("DOMContentLoaded", () => {
     updateUI(data);
   });
 
-  // Check the status of the current tab as soon as the popup opens
   checkCurrentTabStatus();
 
-  // Handle the grayscale toggle button click
   const grayscaleBtn = document.getElementById("toggle-grayscale");
   grayscaleBtn.addEventListener("click", () => {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -217,7 +201,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-// Listen for real-time updates from the background script for the overall stats
 chrome.storage.onChanged.addListener((changes, namespace) => {
   if (namespace === "sync" && changes.dailyStats) {
     const data = {

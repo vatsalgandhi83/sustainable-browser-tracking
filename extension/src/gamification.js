@@ -3,23 +3,22 @@ const SCORING_RULES = {
   VISIT_NON_GREEN_SITE: -5,
 };
 
-
 const BADGES = {
   ECO_STARTER: {
     name: "Eco Starter",
     threshold: 50,
-    description: "You've begun your sustainable browsing journey!"
+    description: "You've begun your sustainable browsing journey!",
   },
   ECO_WARRIOR: {
     name: "Eco Warrior",
     threshold: 100,
-    description: "A true champion of the green web."
+    description: "A true champion of the green web.",
   },
   GREEN_STREAK: {
     name: "Green Streak",
     threshold: 250,
-    description: "You're making a consistent, positive impact!"
-  }
+    description: "You're making a consistent, positive impact!",
+  },
 };
 
 export function calculateNewScore(currentScore, isGreen) {

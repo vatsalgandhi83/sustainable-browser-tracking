@@ -1,6 +1,3 @@
-// Lucide Icons for local use
-// This file provides SVG-based icon components without external dependencies
-
 const iconNames = [
   "leaf",
   "activity",
@@ -16,10 +13,8 @@ const iconNames = [
   "alert-circle",
 ];
 
-// Cache for loaded SVG content
 const iconCache = {};
 
-// Function to load an SVG file
 async function loadSvg(name) {
   if (iconCache[name]) {
     return iconCache[name];
@@ -32,12 +27,10 @@ async function loadSvg(name) {
     iconCache[name] = svgText;
     return svgText;
   } catch (error) {
-    console.error(`Error loading icon ${name}:`, error);
     return null;
   }
 }
 
-// Function to create icons
 async function createIcons(options = {}) {
   const selector = options.selector || "[data-lucide]";
   const elements = document.querySelectorAll(selector);
@@ -50,20 +43,14 @@ async function createIcons(options = {}) {
     if (svgContent) {
       element.innerHTML = svgContent;
 
-      // Apply any custom class or attributes
       const svg = element.querySelector("svg");
       if (svg) {
-        // Ensure SVG inherits colors and size
         svg.setAttribute("width", "100%");
         svg.setAttribute("height", "100%");
-
-        // Get computed styles of parent
         const computedStyle = window.getComputedStyle(element);
         if (computedStyle.color) {
           svg.setAttribute("stroke", "currentColor");
         }
-
-        // Apply custom attributes if provided
         if (options.attrs) {
           Object.entries(options.attrs).forEach(([attr, value]) => {
             svg.setAttribute(attr, value);
@@ -74,14 +61,12 @@ async function createIcons(options = {}) {
   }
 }
 
-// Initialize when DOM is ready
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", () => createIcons());
 } else {
   createIcons();
 }
 
-// Export for use in other scripts
 window.lucide = {
   createIcons,
   iconNames,
